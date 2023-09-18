@@ -1,0 +1,112 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+// Define a structure to represent menu items
+struct MenuItem {
+    string name;
+    double price;
+};
+
+// Function to load menu items from a file
+vector<MenuItem> loadMenu() {
+    vector<MenuItem> menu;
+    ifstream menuFile("menu.txt");
+    
+    if (!menuFile) {
+        cerr << "Error: Unable to open menu file." << endl;
+        exit(1);
+    }
+    
+    while (!menuFile.eof()) {
+        MenuItem item;
+        menuFile >> item.name >> item.price;
+        menu.push_back(item);
+    }
+    
+    menuFile.close();
+    return menu;
+}
+
+// Function to display the menu
+void displayMenu(const vector<MenuItem>& menu) {
+    cout << "Menu:" << endl;
+    for (size_t i = 0; i < menu.size(); i++) {
+        cout << i + 1 << ". " << menu[i].name << " - $" << fixed << setprecision(2) << menu[i].price << endl;
+    }
+    cout << endl;
+}
+
+// Function to calculate and print the bill
+void printBill(const vector<MenuItem>& menu, const vector<int>& selections) {
+    double total = 0.0;
+    
+    cout << "Bill:" << endl;
+    for (int selection : selections) {
+        if (selection >= 1 && selection <= menu.size()) {
+            cout << menu[selection - 1].name << " - $" << fixed << setprecision(2) << menu[selection - 1].price << endl;
+            total += menu[selection - 1].price;
+        }
+    }
+    
+    cout << "Total: $" << fixed << setprecision(2) << total << endl;
+}
+
+int main() {
+    vector<MenuItem> menu = loadMenu();
+    vector<int> selections;
+    
+    cout << "Welcome to Bun Talk Restaurant!" << endl;
+    
+    while (true) {
+        cout << "Please select an option:" << endl;
+        cout << "1. Display Menu" << endl;
+        cout << "2. Select Items" << endl;
+        cout << "3. Print Bill" << endl;
+        cout << "4. Help" << endl;
+        cout << "5. Exit" << endl;
+        
+        int choice;
+        cin >> choice;
+        
+        switch (choice) {
+            case 1:
+                displayMenu(menu);
+                break;
+                
+            case 2:
+                cout << "Enter item number (0 to finish): ";
+                int itemNumber;
+                cin >> itemNumber;
+                if (itemNumber >= 1 && itemNumber <= menu.size()) {
+                    selections.push_back(itemNumber);
+                } else if (itemNumber == 0) {
+                    cout << "Items selected." << endl;
+                } else {
+                    cout << "Invalid item number." << endl;
+                }
+                break;
+                
+            case 3:
+                printBill(menu, selections);
+                break;
+                
+            case 4:
+                cout << "Help: Please select options 1-3 to use the system." << endl;
+                break;
+                
+            case 5:
+                cout << "Thank you for using Bun Talk Restaurant!" << endl;
+                return 0;
+                
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+    
+    return 0;
+}
+
